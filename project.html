@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Countdown Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #111;
+      color: #fff;
+    }
+
+    .timerBox {
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      width: 260px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: none;
+      font-size: 18px;
+      outline: none;
+      text-align: center;
+    }
+
+    .btnRow {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #04befe;
+      color: #000;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #00a2d6;
+    }
+
+    #timeDisplay {
+      font-size: 3.2rem;
+      margin: 20px 0;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="timerBox">
+    <h2>Aarav's Timer</h2>
+
+    <input id="secondsInput" type="number" placeholder="Enter seconds">
+    
+    <div id="timeDisplay">00</div>
+
+    <div class="btnRow">
+      <button id="startBtn" onclick="startTimer()">Start</button>
+      <button id="pauseBtn" onclick="pauseTimer()">Pause</button>
+    </div>
+  </div>
+
+  <audio id="ringtone" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+let timeLeft;
+let timerLoop;
+let isPaused = false;
+
+function startTimer() {
+  let userSeconds = parseInt(document.getElementById("secondsInput").value);
+  const timeText = document.getElementById("timeDisplay");
+  const ringtone = document.getElementById("ringtone");
+
+  if (!userSeconds || userSeconds <= 0) return alert("Enter valid time");
+
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+
+  timeLeft = userSeconds;
+  timeText.textContent = timeLeft;
+
+  clearInterval(timerLoop);
+  timerLoop = setInterval(() => {
+    if (!isPaused) {
+      timeLeft--;
+      timeText.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerLoop);
+        ringtone.play();
+
+        if (Notification.permission === "granted") {
+          new Notification("⏱ Timer Done!", { body: "Your countdown finished." });
+        } else {
+          alert("Timer Done!");
+        }
+      }
+    }
+  }, 1000);
+}
+
+function pauseTimer() {
+  isPaused = !isPaused;
+  document.getElementById("pauseBtn").textContent = isPaused ? "Resume" : "Pause";
+}
+</script>
+</body>
+</html>
